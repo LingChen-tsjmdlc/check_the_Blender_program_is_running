@@ -1,4 +1,5 @@
 import datetime
+import os
 import sys
 import psutil
 import time
@@ -11,12 +12,17 @@ RESET = '\033[0m'
 # Blender可执行文件的路径
 blender_path = "G:/Program Files/blender_ver3.6.5/blender.exe"
 # "推送加"公众号的Token
-token = "ff684d6fdbe44e8f8db8180c029497db"
+token = ""
 # 要检查的exe程序名称
 exe_name = "blender.exe"
+# 总渲染帧数
+total_frame_number = 4924
 # 当前时间戳
 timestamp = time.time()
 now_data = datetime.datetime.fromtimestamp(timestamp)
+# 渲染路径文件夹
+files_path = 'E:/MMD渲染序列/横竖撇点MMD_Saro'
+render_number = len(os.listdir(files_path))
 
 
 # 监测Blender进程是否存在
@@ -29,7 +35,7 @@ def check_blender_running(process_name):
 
 
 # 发送推送消息
-def send_push_message(message,function):
+def send_push_message(message, function):
     # 文档: https://www.pushplus.plus/doc/guide/api.html
     payload = {}
     url = f"https://www.pushplus.plus/send?token={token}&title=Blender程序状态&content={message}&template=html&topic=&channel={function}&callbackUrl=&timestamp=&to="
@@ -39,17 +45,19 @@ def send_push_message(message,function):
     response = requests.request("GET", url, headers=headers, data=payload)
     print("推送加(公众号)接口返回：", response.text)
 
+
 # 主循环
 send_count = 0  # 发送计数器
 while True:
     if check_blender_running(exe_name):
-        print(time.strftime('%Y-%m-%d %H:%M:%S'), GREEN + "Blender正在运行..." + RESET)
+        print(time.strftime('%Y-%m-%d %H:%M:%S'), GREEN + "Blender正在运行......" + RESET, "已经渲染帧数:",
+              f'{render_number}，', "进度:", round((render_number / total_frame_number) * 100, 3), "%")
         send_count = 0  # 重置发送次数
     else:
         if send_count == 0:
             print("Blender.exe 停止时间：", time.strftime('%Y-%m-%d %H:%M:%S'))
             print(RED + "Blender已关闭，发送推送消息！" + RESET)
-            send_push_message("Blender窗口已关闭!!!","wechat")
+            send_push_message("Blender窗口已关闭!!!", "wechat")
             send_count += 1  # 更新发送次数
         elif send_count == 1:
             print("Blender.exe 停止时间：", time.strftime('%Y-%m-%d %H:%M:%S'))
@@ -58,5 +66,5 @@ while True:
             send_count += 1  # 更新发送次数
         else:
             print("消息已发送两次，退出程序。")
-            sys.exit() # 退出循环
+            sys.exit()  # 退出循环
     time.sleep(10)  # 每隔10秒检查一次
