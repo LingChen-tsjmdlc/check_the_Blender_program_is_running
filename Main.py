@@ -22,7 +22,19 @@ timestamp = time.time()
 now_data = datetime.datetime.fromtimestamp(timestamp)
 # 渲染路径文件夹
 files_path = 'E:/MMD渲染序列/横竖撇点MMD_Saro'
-render_number = len(os.listdir(files_path))
+
+
+# 获取渲染文件夹的文件个数
+def get_render_number():
+    render_number = len(os.listdir(files_path))
+    return render_number
+
+
+# 刷新当前进度
+def refresh_progress(total_frame):
+    render_number = len(os.listdir(files_path))
+    progress = round((render_number / total_frame) * 100, 3)
+    return progress
 
 
 # 监测Blender进程是否存在
@@ -51,7 +63,7 @@ send_count = 0  # 发送计数器
 while True:
     if check_blender_running(exe_name):
         print(time.strftime('%Y-%m-%d %H:%M:%S'), GREEN + "Blender正在运行......" + RESET, "已经渲染帧数:",
-              f'{render_number}，', "进度:", round((render_number / total_frame_number) * 100, 3), "%")
+              get_render_number(), "进度:", refresh_progress(total_frame_number), "%")
         send_count = 0  # 重置发送次数
     else:
         if send_count == 0:
