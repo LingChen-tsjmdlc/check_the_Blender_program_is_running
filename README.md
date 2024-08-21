@@ -1,1 +1,13 @@
-# check_the_Blender_program_is_running
+# 一个 Blender 渲染情况推送器
+> **痛点：** Blender超长使时间渲染的时候经常崩溃，于是写了这个程序
+## 主要功能
+1. 几乎实时查询渲染状况
+2. 渲染失败有提示，可推送到手机（支持多人推送）
+## 使用方法
+1. 复制一份 config_example.yaml 并重命名为 config.yaml
+2. 在 config_example 总根据注释填写相关信息
+3. 打开 Main.py 并运行
+## 打算做的功能
+1. 软件崩溃后自动重新渲染
+2. 通过 openCV 计算机视觉识别来适配更多的软件
+3. 能够获取实时进度的 bot
