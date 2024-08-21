@@ -5,6 +5,8 @@ import psutil
 import time
 import requests
 
+# import bpy  #bpy 库太容易报错
+
 GREEN = '\033[92m'
 RED = '\033[91m'
 RESET = '\033[0m'
@@ -13,6 +15,7 @@ RESET = '\033[0m'
 blender_path = "G:/Program Files/blender_ver3.6.5/blender.exe"
 # "推送加"公众号的Token
 token = ""
+token_mom = ""
 # 要检查的exe程序名称
 exe_name = "blender.exe"
 # 总渲染帧数
@@ -47,7 +50,7 @@ def check_blender_running(process_name):
 
 
 # 发送推送消息
-def send_push_message(message, function):
+def send_push_message(token, message, function):
     # 文档: https://www.pushplus.plus/doc/guide/api.html
     payload = {}
     url = f"https://www.pushplus.plus/send?token={token}&title=Blender程序状态&content={message}&template=html&topic=&channel={function}&callbackUrl=&timestamp=&to="
@@ -67,14 +70,17 @@ while True:
         send_count = 0  # 重置发送次数
     else:
         if send_count == 0:
-            print("Blender.exe 停止时间：", time.strftime('%Y-%m-%d %H:%M:%S'))
+            print("\nBlender.exe 停止时间：", time.strftime('%Y-%m-%d %H:%M:%S'))
             print(RED + "Blender已关闭，发送推送消息！" + RESET)
-            send_push_message("Blender窗口已关闭!!!", "wechat")
+            send_push_message(token_mom, "Blender窗口已关闭!!!", "wechat")
+            send_push_message(token, "Blender窗口已关闭!!!", "wechat")
+            # bpy.ops.wm.open_mainfile(filepath='path_to_your_blend_file.blend')
             send_count += 1  # 更新发送次数
         elif send_count == 1:
-            print("Blender.exe 停止时间：", time.strftime('%Y-%m-%d %H:%M:%S'))
-            print("Blender已关闭，发送推送消息！")
-            send_push_message("Blender窗口已关闭!!!", "mail")
+            print("\nBlender.exe 停止时间：", time.strftime('%Y-%m-%d %H:%M:%S'))
+            print(RED + "Blender已关闭，发送推送消息！" + RESET)
+            send_push_message(token_mom, "Blender窗口已关闭!!!", "wechat")
+            send_push_message(token, "Blender窗口已关闭!!!", "mail")
             send_count += 1  # 更新发送次数
         else:
             print("消息已发送两次，退出程序。")
