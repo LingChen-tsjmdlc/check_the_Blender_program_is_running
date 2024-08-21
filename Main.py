@@ -4,6 +4,7 @@ import sys
 import psutil
 import time
 import requests
+import yaml
 
 # import bpy  #bpy 库太容易报错
 
@@ -11,21 +12,35 @@ GREEN = '\033[92m'
 RED = '\033[91m'
 RESET = '\033[0m'
 
+# 读取根目录下的config.yaml文件
+def read_config():
+    # 打开并读取YAML文件
+    with open('./config.yaml', 'r', encoding='utf-8') as file:
+        config_data = yaml.safe_load(file)
+
+    return config_data
+
+
+# 使用读取的配置
+config = read_config()
+print(config)  # 打印整个配置内容
+token_d = (config['token'][0])
+print(token_d)
+
 # Blender可执行文件的路径
-blender_path = "G:/Program Files/blender_ver3.6.5/blender.exe"
+blender_path = config['path']['blender']
 # "推送加"公众号的Token
-token = ""
-token_mom = ""
+token = config['token'][0]
+token_mom = config['token'][1]
 # 要检查的exe程序名称
-exe_name = "blender.exe"
+exe_name = config['exeName']
 # 总渲染帧数
-total_frame_number = 4924
+total_frame_number = config['frame']['total']
 # 当前时间戳
 timestamp = time.time()
 now_data = datetime.datetime.fromtimestamp(timestamp)
 # 渲染路径文件夹
-files_path = 'E:/MMD渲染序列/横竖撇点MMD_Saro'
-
+files_path = config['path']['output']
 
 # 获取渲染文件夹的文件个数
 def get_render_number():

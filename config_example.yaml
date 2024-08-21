@@ -1,0 +1,12 @@
+# token 填写位置
+token:
+  - 112233abcabc
+  - 112233abcabc
+# 路径相关填写位置
+path:
+  blender: D:/Program Files/Blender_ver2.93.15/blender-2.93.15-windows-x64/blender.exe  #blender 的软件路径
+  output: E:/Blender _ProjectSave/temp_render #渲染序列的输出路径
+# 渲染帧数相关
+frame:
+  total: 4924 #当前渲染文件的总帧数
+exeName: blender.exe
