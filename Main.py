@@ -5,6 +5,7 @@ import psutil
 import time
 import requests
 import yaml
+import random
 from pynput.mouse import Controller, Button
 from pynput.keyboard import Controller as KeyboardController
 from pynput.keyboard import Key
@@ -14,6 +15,18 @@ from pynput.keyboard import Key
 GREEN = '\033[92m'
 RED = '\033[91m'
 RESET = '\033[0m'
+
+
+messages = [
+    "Blender 窗口已关闭!及时查看电脑情况",
+    "Blender 窗口已关闭!及时查看电脑情况.",
+    "Blender 窗口已关闭!!及时查看电脑情况",
+    "Blender 窗口已关闭!!!及时查看电脑情况",
+    "Blender 窗口已关闭！及时查看电脑情况",
+    "Blender 窗口已关闭！及时查看电脑情况。",
+    "Blender 窗口已关闭！！及时查看电脑情况",
+    "Blender 窗口已关闭！！！及时查看电脑情况"
+]
 
 
 # 读取根目录下的config.yaml文件
@@ -32,7 +45,7 @@ token_d = (config['token'][0])
 # Blender可执行文件的路径
 blender_path = config['path']['blender']
 # "推送加"公众号的Token
-token = config['token'][0]
+token_me = config['token'][0]
 token_mom = config['token'][1]
 # 要检查的exe程序名称
 exe_name = config['exeName']
@@ -81,10 +94,12 @@ def check_blender_running(process_name):
 
 
 # 发送推送消息
-def send_push_message(token, message, function):
+def send_push_message(token, function):
+    # 从messages列表中随机选择一个消息
+    random_message = random.choice(messages)
     # 文档: https://www.pushplus.plus/doc/guide/api.html
     payload = {}
-    url = f"https://www.pushplus.plus/send?token={token}&title=Blender程序状态&content={message}&template=html&topic=&channel={function}&callbackUrl=&timestamp=&to="
+    url = f"https://www.pushplus.plus/send?token={token}&title=Blender程序状态&content={random_message}&template=html&topic=&channel={function}&callbackUrl=&timestamp=&to="
     headers = {
         'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
     }
@@ -102,7 +117,7 @@ def ctrl_mouse_open_render_file():
 # 控制鼠标
 def ctrl_mouse_change_render_start_farm():
     mouse = Controller()
-    mouse.position = (2200, 1060)
+    mouse.position = (2366, 814)
     time.sleep(1)
     mouse.click(Button.left)
 
@@ -164,7 +179,7 @@ while True:
         remaining_time = estimate_remaining_time(config['timeStart'], refresh_progress(total_frame_number))
         if now_farm == total_frame_number:
             print(GREEN + "已经全部渲染完成！！！" + RESET)
-            send_push_message(token, "已经全部渲染完成！！！", "wechat")
+            send_push_message(token_me, "wechat")
             sys.exit()
         print(time.strftime('%Y-%m-%d %H:%M:%S'), GREEN + "\t\t   Blender正在运行......" + RESET, "\t已经渲染帧数:",
               get_render_number(), "\t\t  剩余:", total_frame_number - get_render_number(), "\t\t\t进度:",
@@ -175,15 +190,15 @@ while True:
             print(time.strftime('%Y-%m-%d %H:%M:%S'), RED + "\t\t   Blender已关闭!开始推送消息" + RESET,
                   "\t已经渲染帧数:",
                   get_render_number(), "\t\t  剩余:", total_frame_number - get_render_number(), "\t\t\t进度:",
-                  refresh_progress(total_frame_number), "%", "\t\t预计剩余：", remaining_time)
+                  refresh_progress(total_frame_number), "%")
             print(RED + "Blender已关闭，发送推送消息！" + RESET)
-            send_push_message(token_mom, "Blender 窗口已关闭!!!请及时查看电脑情况。", "wechat")
-            send_push_message(token, "Blender 窗口已关闭!!!请及时查看电脑情况。", "wechat")
-            send_push_message(token, "Blende r窗口已关闭!!!请及时查看电脑情况。", "mail")
+            send_push_message(token_mom, "wechat")
+            send_push_message(token_me, "wechat")
+            send_push_message(token_me, "mail")
 
             print(time.strftime('%Y-%m-%d %H:%M:%S'), RED + "\t\t   准备重新渲染！" + RESET, "\t已经渲染帧数:",
                   get_render_number(), "\t\t  剩余:", total_frame_number - get_render_number(), "\t\t\t进度:",
-                  refresh_progress(total_frame_number), "%", "\t\t预计剩余：", remaining_time)
+                  refresh_progress(total_frame_number), "%")
             os.startfile(blender_path)  # TODO：临时方案，使用固定的鼠标点击和快捷键配合；需要采用更好的方案！
             time.sleep(8)
             ctrl_mouse_open_render_file()
